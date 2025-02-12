@@ -1,4 +1,4 @@
-from bot.bot import main
+from bot.bot import botMain
 from database.queries.orm import AsyncORM
 from database.database import create_tables
 
@@ -10,6 +10,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(message)s"
 )
 logging.getLogger("aiogram").setLevel(logging.WARNING)
+
 
 
 create_tables(recreation = True)
@@ -24,4 +25,4 @@ create_tables(recreation = True)
 
 
 if __name__ == '__main__':
-	asyncio.run(main())
+	asyncio.run(botMain())
