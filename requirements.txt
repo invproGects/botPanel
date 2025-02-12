@@ -1,0 +1,8 @@
+aiogram==3.17.0
+pydantic-settings==2.7.1.
+
+psycopg==3.2.4
+psycopg_binary==3.2.4
+
+asyncpg==0.30.0
+SQLAlchemy==2.0.38
