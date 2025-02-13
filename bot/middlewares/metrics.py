@@ -24,9 +24,8 @@ class MetricsMiddleware(BaseMiddleware):
 			if not user:
 				await AsyncORM.add_user(tgid)
 
-				logging.info(f"New User {tgid=}")
-
-		log_entry = f"{event.date} | {event.from_user.id} | {event.text}\n"
+				logging.info(f"New User {tgid=}") 
+		log_entry = f"{event.date} | {event.from_user.id} | {event.from_user.first_name} |{event.text}\n"
 		log_queue.put(log_entry)
 
 		return await handler(event, data)

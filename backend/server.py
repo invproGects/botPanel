@@ -46,7 +46,7 @@ async def test():
 	return "Hello World"
 
 
-@app.websocket("/ws/logs/")
+@app.websocket("/ws/logs")
 async def logs(websocket: WebSocket):
 	logging.debug("Attempting to accept connection")
 	await websocket.accept()
@@ -60,11 +60,11 @@ async def logs(websocket: WebSocket):
 		while True:
 			while not log_queue.empty():
 				log_entry = log_queue.get()
+
 				for conn in connections:
 					await conn.send_text(log_entry)
-				await asyncio.sleep(0.5)  # Ожидание новых логов
+				await asyncio.sleep(0.25)  # Ожидание новых логов
+			await asyncio.sleep(0.25)
 	except WebSocketDisconnect:
 		connections.remove(websocket)
 
-if __name__ == "__main__":
-	uvicorn.run("server:app", port = 8000)
