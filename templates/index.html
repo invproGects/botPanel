@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Консоль логов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #282c34;
+            color: white;
+        }
+        .console-container {
+            width: 80%;
+            max-width: 800px;
+            height: 400px;
+            background-color: #1e2127;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .log-entry {
+            font-family: "Courier New", monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .log-entry:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="console-container">
+        <div id="logOutput" class="log-entry"></div>
+    </div>
+
+    <script>
+        // Создаем подключение к WebSocket
+        const socket = new WebSocket('ws://127.0.0.1:8000/ws/logs'); // URL вашего WebSocket сервера
+        socket.onopen = () => {
+            console.log("Connected to WebSocket!");
+        };
+
+        // Слушаем сообщения от сервера
+        socket.onmessage = function(event) {
+            console.log("Message from server: ", event.data);
+
+            const logContainer = document.getElementById('logOutput');
+            const logMessage = document.createElement('div');
+            logMessage.className = 'log-entry';
+            logMessage.textContent = event.data; // Получаем сообщение из WebSocket
+
+            // Добавляем лог в контейнер
+            logContainer.appendChild(logMessage);
+
+            // Автоматическая прокрутка вниз при появлении нового лога
+            logContainer.scrollTop = logContainer.scrollHeight;
+        };
+
+        // Обрабатываем ошибки WebSocket
+        socket.onerror = function(error) {
+            
+            console.error('Ошибка WebSocket:', error);
+        };
+
+        // Обрабатываем закрытие соединения
+        socket.onclose = function(event) {
+            console.log("WebSocket closed:", event);
+            if (event.wasClean) {
+                console.log('Соединение WebSocket закрыто');
+            } else {
+                console.error('Соединение WebSocket закрыто с ошибкой');
+            }
+        };
+    </script>
+</body>
+</html>

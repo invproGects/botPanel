@@ -12,6 +12,9 @@ class Settings(BaseSettings):
 
 	BOT_TOKEN: str
 
+	OWNER_USERNAME: str
+	APP_NAME: str
+
 	@property
 	def DATABASE_URL_asyncpg(self):
 		return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
