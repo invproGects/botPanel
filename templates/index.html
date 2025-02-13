@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <title>Консоль логов</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Courier New", monospace;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,34 +17,91 @@
             color: white;
         }
         .console-container {
-            width: 80%;
-            max-width: 800px;
-            height: 400px;
+            width: 90%;
+            max-width: 1200px;
+            height: 80%;
             background-color: #1e2127;
             border-radius: 10px;
             padding: 20px;
-            overflow-y: auto;
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .log-output {
+            flex: 1; /* логовый блок растягивается на все доступное пространство */
+            overflow-y: auto;
+            padding-right: 10px;
         }
         .log-entry {
             font-family: "Courier New", monospace;
             white-space: pre-wrap;
             word-wrap: break-word;
+            margin-bottom: 10px;
         }
         .log-entry:last-child {
             margin-bottom: 0;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #222;
+            border-top: 1px solid #222;
+            width: 100%;
+        }
+        .input-container input {
+            width: 100%;
+            padding: 10px;
+            background-color: #222;
+            border: 3px solid #444;
+            border-radius: 5px;
+            color: white;
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            outline: none;
+            caret-color: #00d100; /* Зеленый курсор как в терминале */
+            border-color: #333;
+            position: relative;
+        }
+        .input-container input:focus {
+            border-color: #222;
+        }
+        .input-container input::placeholder {
+            color: #777;
+        }
+        /* Мигающий курсор с помощью псевдоэлемента */
+        .input-container input:focus::after {
+            content: '';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            width: 2px;
+            height: 16px;
+            background-color: #00d100;
+            animation: blink-caret 0.8s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            50% {
+                background-color: transparent;
+            }
         }
     </style>
 </head>
 <body>
     <div class="console-container">
-        <div id="logOutput" class="log-entry"></div>
+        <div id="logOutput" class="log-output"></div>
+        <div class="input-container">
+            <input id="logInput" type="text" placeholder="Введите команду и нажмите Enter">
+        </div>
     </div>
 
     <script>
         // Создаем подключение к WebSocket
+        let firstMsgTag = 1;
+
         const socket = new WebSocket('ws://127.0.0.1:8000/ws/logs'); // URL вашего WebSocket сервера
         socket.onopen = () => {
             console.log("Connected to WebSocket!");
@@ -59,6 +116,14 @@
             logMessage.className = 'log-entry';
             logMessage.textContent = event.data; // Получаем сообщение из WebSocket
 
+            if (firstMsgTag){
+                logMessage.innerHTML = event.data;
+                firstMsgTag = 0;
+            }
+            else {
+                logMessage.textContent = event.data;
+            }
+
             // Добавляем лог в контейнер
             logContainer.appendChild(logMessage);
 
@@ -68,7 +133,6 @@
 
         // Обрабатываем ошибки WebSocket
         socket.onerror = function(error) {
-            
             console.error('Ошибка WebSocket:', error);
         };
 
@@ -81,6 +145,20 @@
                 console.error('Соединение WebSocket закрыто с ошибкой');
             }
         };
+
+        // Обработчик отправки данных в WebSocket при нажатии Enter
+        const logInput = document.getElementById('logInput');
+        logInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && logInput.value.trim() !== '') {
+                const message = logInput.value.trim();
+
+                // Отправляем сообщение в WebSocket
+                socket.send(message);
+
+                // Очищаем поле ввода
+                logInput.value = '';
+            }
+        });
     </script>
 </body>
 </html>

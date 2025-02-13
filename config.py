@@ -8,8 +8,6 @@ class Settings(BaseSettings):
 	DB_PASS: str
 	DB_NAME: str
 
-	DB_ECHO: bool
-
 	BOT_TOKEN: str
 
 	OWNER_USERNAME: str

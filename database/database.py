@@ -6,12 +6,12 @@ from config import settings
 
 async_engine = create_async_engine(
 	settings.DATABASE_URL_asyncpg,
-	echo = settings.DB_ECHO
+	echo = False
 )
 
 sync_engine = create_engine(
 	settings.DATABASE_URL_psycopg,
-	echo = settings.DB_ECHO
+	echo = False
 )
 
 
@@ -23,6 +23,6 @@ class Base(DeclarativeBase):
 
 
 def create_tables(recreation: bool = False):
-		if recreation:
-			Base.metadata.drop_all(sync_engine)
-		Base.metadata.create_all(sync_engine)
+	if recreation:
+		Base.metadata.drop_all(sync_engine)
+	Base.metadata.create_all(sync_engine)

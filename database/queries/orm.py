@@ -4,12 +4,11 @@ from database.database import async_session_factory, async_engine, sync_engine, 
 from database.models import UsersOrm
 
 
-class AsyncORM:
+class AsyncBotORM:
 	@staticmethod
-	async def add_user(tgid: int):
+	async def add_user(tgID: int):
 		async with async_session_factory() as session:
-			user = UsersOrm(tgid = tgid)
-
+			user = UsersOrm(tgid = tgID)
 			session.add(user)
 
 			await session.commit()
@@ -29,6 +28,15 @@ class AsyncORM:
 			users = result.all()
 		return users
 			
-	@staticmethod
-	async def update_user(tgig: int, **data):
-		pass
+	# @staticmethod
+	# async def update_user(tgig: int, **data):
+	# 	pass
+
+	# @staticmethod
+	# async def ban_user(tgID: int):
+	# 	# stmt = inser
+	# 	pass
+
+	# @staticmethod
+	# async def unban_user(tgID: int):
+	# 	pass

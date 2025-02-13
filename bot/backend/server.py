@@ -13,12 +13,9 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
 from config import log_queue, settings
 
-logging.basicConfig(
-	level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s %(message)s"
+app = FastAPI(
+	root_path = f"/{settings.OWNER_USERNAME}/{settings.APP_NAME}"
 )
-
-app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,23 +25,7 @@ app.add_middleware(
     allow_headers=["*"],  # Разрешаем все заголовки
 )
 
-@app.middleware("http")
-async def add_csp_header(request, call_next):
-    response = await call_next(request)
-    response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
-        "connect-src 'self' ws://127.0.0.1:5500"  # Разрешаем WebSocket соединения с локального хоста
-    )
-    return response
-
-
-
 connections: List[WebSocket] = []
-
-@app.get("/test")
-async def test():
-	return "Hello World"
-
 
 @app.websocket("/ws/logs")
 async def logs(websocket: WebSocket):
@@ -68,3 +49,5 @@ async def logs(websocket: WebSocket):
 	except WebSocketDisconnect:
 		connections.remove(websocket)
 
+if __name__ == "__main__":
+	uvicorn.run(app, port = 8000)
